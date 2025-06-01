@@ -23,8 +23,9 @@ namespace avaness.SpaceEngineersLauncher
 		private const string RepoUrl = "https://github.com/SpaceGT/Pulsar/";
 		private const string RepoDownloadSuffix = "releases/download/{0}/PluginLoader-{0}.zip";
 		private static readonly Regex VersionRegex = new Regex(@"^v(\d+\.)*\d+$");
-		private const string PluginLoaderFile = "PluginLoader.dll";
-		private const string BinaryInstallDirectory = "Plugins";
+		private const string PluginLoaderFile = "loader.dll";
+		private const string PluginLoaderDirectory = "Plugins";
+		private const string LibraryDirectory = PluginLoaderDirectory + "/Libraries";
 		private const string OriginalAssemblyFile = "SpaceEngineers.exe";
 		private const string ProgramGuid = "03f85883-4990-4d47-968e-5e4fc5d72437";
 		private static readonly Version SupportedGameVersion = new Version(1, 202, 0);
@@ -125,7 +126,7 @@ namespace avaness.SpaceEngineersLauncher
 
 				if (CanUseLoader(config))
 				{
-					string loaderDll = Path.Combine(exeLocation, BinaryInstallDirectory, PluginLoaderFile);
+					string loaderDll = Path.Combine(exeLocation, PluginLoaderDirectory, PluginLoaderFile);
 					pluginLog.Append(loaderDll).Append(',');
 					plugins.Add(loaderDll);
 				}
@@ -143,7 +144,7 @@ namespace avaness.SpaceEngineersLauncher
 						for (int i = pluginFlag + 1; i < args.Length && !args[i].StartsWith("-"); i++)
 						{
 							string plugin = args[i];
-							if (plugin.EndsWith("PluginLoader.dll", StringComparison.OrdinalIgnoreCase))
+							if (plugin.EndsWith(PluginLoaderFile, StringComparison.OrdinalIgnoreCase))
 								continue;
 							if (!Path.IsPathRooted(plugin))
 								plugin = Path.GetFullPath(Path.Combine(exeLocation, plugin));
@@ -389,7 +390,7 @@ namespace avaness.SpaceEngineersLauncher
 					foreach (ZipArchiveEntry entry in zipFile.Entries)
 					{
 						string fileName = Path.GetFileName(entry.FullName);
-						string filePath = Path.Combine(exeLocation, BinaryInstallDirectory, fileName);
+						string filePath = Path.Combine(exeLocation, PluginLoaderDirectory, fileName);
 
 						using (Stream entryStream = entry.Open())
 						using (FileStream entryFile = File.Create(filePath))
@@ -434,7 +435,7 @@ namespace avaness.SpaceEngineersLauncher
 
 		static bool CanUseLoader(ConfigFile config)
         {
-			if (!File.Exists(Path.Combine(exeLocation, BinaryInstallDirectory, PluginLoaderFile)))
+			if (!File.Exists(Path.Combine(exeLocation, PluginLoaderDirectory, PluginLoaderFile)))
             {
 				LogFile.WriteLine("WARNING: File verification failed, file does not exist: " + PluginLoaderFile);
 				return false;
@@ -444,7 +445,11 @@ namespace avaness.SpaceEngineersLauncher
 			{
 				foreach (string file in config.Files)
 				{
-					if (!File.Exists(Path.Combine(exeLocation, BinaryInstallDirectory, file)))
+					// Exclude old plugin loader dll
+					if (file.EndsWith("PluginLoader.dll", StringComparison.OrdinalIgnoreCase))
+						continue;
+
+					if (!File.Exists(Path.Combine(exeLocation, LibraryDirectory, file)))
                     {
 						LogFile.WriteLine("WARNING: File verification failed, file does not exist: " + file);
 						return false;
