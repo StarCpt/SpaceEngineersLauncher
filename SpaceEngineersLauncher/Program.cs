@@ -406,7 +406,15 @@ namespace avaness.SpaceEngineersLauncher
 					foreach (ZipArchiveEntry entry in zipFile.Entries)
 					{
 						string fileName = Path.GetFileName(entry.FullName);
+
+						if (fileName.Equals("Pulsar.dll", StringComparison.OrdinalIgnoreCase))
+							fileName = "Plugins/loader.dll";
+						else
+							fileName = "Plugins/Libraries/" + fileName;
+
 						string filePath = Path.Combine(exeLocation, PluginLoaderDirectory, fileName);
+
+						Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
 						using (Stream entryStream = entry.Open())
 						using (FileStream entryFile = File.Create(filePath))
