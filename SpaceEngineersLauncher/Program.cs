@@ -14,6 +14,7 @@ using System.Linq;
 using System.Diagnostics;
 using System.Threading;
 using System.Security.Cryptography;
+using VRage.FileSystem;
 
 namespace avaness.SpaceEngineersLauncher
 {
@@ -37,9 +38,11 @@ namespace avaness.SpaceEngineersLauncher
 		private static Mutex mutex; // For ensuring only a single instance of SE
 		private static bool mutexActive;
 
-		static void Main(string[] args)
+        public static string PluginsDir => Path.GetFullPath(Path.Combine(MyFileSystem.ExePath, "Plugins"));
+
+        static void Main(string[] args)
 		{
-			if (IsReport(args))
+            if (IsReport(args))
             {
 				StartSpaceEngineers(args);
 				return;
@@ -65,8 +68,11 @@ namespace avaness.SpaceEngineersLauncher
 				return;
 			}
 
-			try
-			{
+            AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve(MyFileSystem.ExePath);
+            AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve(Path.Combine(PluginsDir, "Libraries"));
+
+            try
+            {
 				StartPluginLoader(args);
 				StartSpaceEngineers(args);
 				Close();
@@ -78,7 +84,18 @@ namespace avaness.SpaceEngineersLauncher
 			}
 		}
 
-		private static void StartPluginLoader(string[] args)
+        private static ResolveEventHandler AssemblyResolve(string path)
+        {
+            return (object sender, ResolveEventArgs args) =>
+            {
+                string asmName = new AssemblyName(args.Name).Name + ".dll";
+                string fullPath = Path.Combine(path, asmName);
+
+                return File.Exists(fullPath) ? Assembly.LoadFrom(fullPath) : null;
+            };
+        }
+
+        private static void StartPluginLoader(string[] args)
         {
 			bool nosplash = args != null && Array.IndexOf(args, "-nosplash") >= 0;
 			if (!nosplash)

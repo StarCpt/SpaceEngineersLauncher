@@ -89,6 +89,10 @@
       <HintPath>..\Bin64\VRage.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="VRage.Library">
+      <HintPath>..\Bin64\VRage.Library.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigFile.cs" />
