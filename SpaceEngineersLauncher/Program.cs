@@ -20,7 +20,7 @@ namespace avaness.SpaceEngineersLauncher
     static class Program
     {
 		private const uint AppId = 244850u;
-		private const string RepoUrl = "https://github.com/sepluginloader/PluginLoader/";
+		private const string RepoUrl = "https://github.com/SpaceGT/Pulsar/";
 		private const string RepoDownloadSuffix = "releases/download/{0}/PluginLoader-{0}.zip";
 		private static readonly Regex VersionRegex = new Regex(@"^v(\d+\.)*\d+$");
 		private const string PluginLoaderFile = "PluginLoader.dll";
