@@ -24,6 +24,7 @@ namespace avaness.SpaceEngineersLauncher
 		private const string RepoDownloadSuffix = "releases/download/{0}/PluginLoader-{0}.zip";
 		private static readonly Regex VersionRegex = new Regex(@"^v(\d+\.)*\d+$");
 		private const string PluginLoaderFile = "PluginLoader.dll";
+		private const string BinaryInstallDirectory = "Plugins";
 		private const string OriginalAssemblyFile = "SpaceEngineers.exe";
 		private const string ProgramGuid = "03f85883-4990-4d47-968e-5e4fc5d72437";
 		private static readonly Version SupportedGameVersion = new Version(1, 202, 0);
@@ -124,7 +125,7 @@ namespace avaness.SpaceEngineersLauncher
 
 				if (CanUseLoader(config))
 				{
-					string loaderDll = Path.Combine(exeLocation, PluginLoaderFile);
+					string loaderDll = Path.Combine(exeLocation, BinaryInstallDirectory, PluginLoaderFile);
 					pluginLog.Append(loaderDll).Append(',');
 					plugins.Add(loaderDll);
 				}
@@ -388,7 +389,7 @@ namespace avaness.SpaceEngineersLauncher
 					foreach (ZipArchiveEntry entry in zipFile.Entries)
 					{
 						string fileName = Path.GetFileName(entry.FullName);
-						string filePath = Path.Combine(exeLocation, fileName);
+						string filePath = Path.Combine(exeLocation, BinaryInstallDirectory, fileName);
 
 						using (Stream entryStream = entry.Open())
 						using (FileStream entryFile = File.Create(filePath))
@@ -433,7 +434,7 @@ namespace avaness.SpaceEngineersLauncher
 
 		static bool CanUseLoader(ConfigFile config)
         {
-			if (!File.Exists(Path.Combine(exeLocation, PluginLoaderFile)))
+			if (!File.Exists(Path.Combine(exeLocation, BinaryInstallDirectory, PluginLoaderFile)))
             {
 				LogFile.WriteLine("WARNING: File verification failed, file does not exist: " + PluginLoaderFile);
 				return false;
@@ -443,7 +444,7 @@ namespace avaness.SpaceEngineersLauncher
 			{
 				foreach (string file in config.Files)
 				{
-					if (!File.Exists(Path.Combine(exeLocation, file)))
+					if (!File.Exists(Path.Combine(exeLocation, BinaryInstallDirectory, file)))
                     {
 						LogFile.WriteLine("WARNING: File verification failed, file does not exist: " + file);
 						return false;
