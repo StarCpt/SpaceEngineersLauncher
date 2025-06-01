@@ -68,7 +68,6 @@ namespace avaness.SpaceEngineersLauncher
 				return;
 			}
 
-            AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve(MyFileSystem.ExePath);
             AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve(Path.Combine(PluginsDir, "Libraries"));
 
             try
