@@ -26,7 +26,7 @@ namespace avaness.SpaceEngineersLauncher
 		private static readonly Regex VersionRegex = new Regex(@"^v(\d+\.)*\d+$");
 		private const string PluginLoaderFile = "loader.dll";
 		private const string PluginLoaderDirectory = "Plugins";
-		private const string LibraryDirectory = PluginLoaderDirectory + "/Libraries";
+		//private const string LibraryDirectory = PluginLoaderDirectory + "/Libraries";
 		private const string OriginalAssemblyFile = "SpaceEngineers.exe";
 		private const string ProgramGuid = "03f85883-4990-4d47-968e-5e4fc5d72437";
 		private static readonly Version SupportedGameVersion = new Version(1, 202, 0);
@@ -467,14 +467,28 @@ namespace avaness.SpaceEngineersLauncher
 
 			if (config.Files != null)
 			{
-				foreach (string file in config.Files)
+                for (int i = 0; i < config.Files.Length; i++)
 				{
-					// Exclude old plugin loader dll
-					if (file.EndsWith("PluginLoader.dll", StringComparison.OrdinalIgnoreCase))
+                    string file = config.Files[i];
+                    // Exclude old plugin loader dll
+                    if (file.EndsWith("PluginLoader.dll", StringComparison.OrdinalIgnoreCase))
 						continue;
 
-					if (!File.Exists(Path.Combine(exeLocation, LibraryDirectory, file)))
-                    {
+					// old pluginloader compatibility
+					if (!file.StartsWith("Plugins", StringComparison.OrdinalIgnoreCase))
+					{
+						if (file.EndsWith("loader.dll", StringComparison.OrdinalIgnoreCase))
+						{
+							file = "Plugins/loader.dll";
+						}
+						else
+						{
+							file = "Plugins/Libraries/" + file;
+						}
+					}
+
+					if (!File.Exists(Path.Combine(exeLocation, file)))
+					{
 						LogFile.WriteLine("WARNING: File verification failed, file does not exist: " + file);
 						return false;
 					}
