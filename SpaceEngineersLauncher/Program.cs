@@ -149,7 +149,7 @@ namespace avaness.SpaceEngineersLauncher
                 }
                 else
                 {
-                    LogFile.WriteLine("WARNING: Plugin Loader does not exist.");
+                    LogFile.WriteLine("WARNING: Pulsar does not exist.");
                 }
 
                 if (args != null && args.Length > 1)
@@ -191,8 +191,8 @@ namespace avaness.SpaceEngineersLauncher
             }
             catch (Exception e)
             {
-                LogFile.WriteLine("Error while getting Plugin Loader ready: " + e);
-                Show("Plugin Loader crashed: " + e);
+                LogFile.WriteLine("Error while getting Pulsar ready: " + e);
+                Show("Pulsar crashed: " + e);
                 if (Application.OpenForms.Count > 0)
                     Application.OpenForms[0].Close();
             }
@@ -325,11 +325,11 @@ namespace avaness.SpaceEngineersLauncher
             if (!string.IsNullOrWhiteSpace(config.LoaderVersion) && CanUseLoader(config) && VersionRegex.IsMatch(config.LoaderVersion))
             {
                 currentVersion = config.LoaderVersion;
-                LogFile.WriteLine("Plugin Loader " + currentVersion);
+                LogFile.WriteLine("Pulsar " + currentVersion);
             }
             else
             {
-                LogFile.WriteLine("Plugin Loader version unknown");
+                LogFile.WriteLine("Pulsar version unknown");
             }
 
             if (!IsLatestVersion(config, currentVersion, out string latestVersion))
@@ -339,13 +339,13 @@ namespace avaness.SpaceEngineersLauncher
                 StringBuilder prompt = new StringBuilder();
                 if (string.IsNullOrWhiteSpace(currentVersion))
                 {
-                    prompt.Append("Plugin Loader is not installed!").AppendLine();
+                    prompt.Append("Pulsar is not installed!").AppendLine();
                     prompt.Append("Version to download: ").Append(latestVersion).AppendLine();
                     prompt.Append("Would you like to install it now?");
                 }
                 else
                 {
-                    prompt.Append("An update is available for Plugin Loader:").AppendLine();
+                    prompt.Append("An update is available for Pulsar:").AppendLine();
                     prompt.Append(currentVersion).Append(" -> ").Append(latestVersion).AppendLine();
                     prompt.Append("Would you like to update now?");
                 }
@@ -397,7 +397,7 @@ namespace avaness.SpaceEngineersLauncher
             {
                 HashSet<string> files = new HashSet<string>();
 
-                LogFile.WriteLine("Updating to Plugin Loader " + version);
+                LogFile.WriteLine("Updating to Pulsar " + version);
 
                 Uri uri = new Uri(RepoUrl + string.Format(RepoDownloadSuffix, version), UriKind.Absolute);
                 HttpWebResponse response = Download(config, uri);
