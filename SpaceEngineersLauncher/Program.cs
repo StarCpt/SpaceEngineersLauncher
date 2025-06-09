@@ -33,7 +33,7 @@ namespace avaness.SpaceEngineersLauncher
 
         private static string LoaderAssemblyPath => Path.Combine(exeLocation, "Plugins", PluginLoaderFile);
 
-        private static string exeLocation;
+        private static string exeLocation; // bin64 path
         private static SplashScreen splash;
         private static Mutex mutex; // For ensuring only a single instance of SE
         private static bool mutexActive;
@@ -103,6 +103,49 @@ namespace avaness.SpaceEngineersLauncher
 
             try
             {
+                // check if PluginLoader is installed
+                string pluginLoaderDll = Path.Combine(exeLocation, "PluginLoader.dll");
+                if (File.Exists(pluginLoaderDll))
+                {
+                    // notify the user that PluginLoader.dll will make Pulsar unstable
+                    string pluginLoaderWarningStr =
+                        "Incompatible version of Plugin Loader detected!" +
+                        "\nThe Plugin Loader installation will cause instabilities." +
+                        "\nWould you like to remove the incompatible version of Plugin Loader?";
+
+                    DialogResult result = Show(pluginLoaderWarningStr, MessageBoxButtons.YesNo);
+                    if (result is DialogResult.Yes)
+                    {
+                        string[] pluginLoaderFiles =
+                        {
+                            "PluginLoader.dll",
+                            "0Harmony.dll",
+                            "Newtonsoft.Json.dll",
+                            "NuGet.Common.dll",
+                            "NuGet.Configuration.dll",
+                            "NuGet.Frameworks.dll",
+                            "NuGet.Packaging.dll",
+                            "NuGet.Protocol.dll",
+                            "NuGet.Resolver.dll",
+                            "NuGet.Versioning.dll",
+                        };
+
+                        foreach (var fileName in pluginLoaderFiles)
+                        {
+                            string filePath = Path.Combine(exeLocation, fileName);
+                            if (File.Exists(filePath))
+                            {
+                                File.Delete(filePath);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Show("Starting SE without Pulsar.");
+                        return; // start SE without Pulsar
+                    }
+                }
+
                 string pluginsDir = Path.Combine(exeLocation, "Plugins");
                 if(!Directory.Exists(pluginsDir))
                     Directory.CreateDirectory(pluginsDir);
